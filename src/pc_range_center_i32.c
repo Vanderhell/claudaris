@@ -1,7 +1,7 @@
-﻿#include "pc_range_center_i32.h"
+#include "pc_range_center_i32.h"
 #include <stddef.h>
 
-bool rm_range_center_i32(int32_t lower, int32_t upper, int32_t *center)
+bool pc_range_center_i32(int32_t lower, int32_t upper, int32_t *center)
 {
     int64_t delta;
     if (center == NULL || lower > upper) return false;

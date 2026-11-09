@@ -1,7 +1,7 @@
-﻿#include "pc_floor_to_multiple_i32.h"
+#include "pc_floor_to_multiple_i32.h"
 #include <stddef.h>
 
-bool rm_floor_to_multiple_i32(int32_t value, int32_t multiple,
+bool pc_floor_to_multiple_i32(int32_t value, int32_t multiple,
                               int32_t *rounded)
 {
     int64_t q, r, result;

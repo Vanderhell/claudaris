@@ -1,7 +1,7 @@
-﻿#include "pc_ratio_between_u32.h"
+#include "pc_ratio_between_u32.h"
 #include <stddef.h>
 
-bool rm_ratio_between_u32(uint32_t numerator, uint32_t denominator,
+bool pc_ratio_between_u32(uint32_t numerator, uint32_t denominator,
                           uint32_t lower_num, uint32_t lower_den,
                           uint32_t upper_num, uint32_t upper_den,
                           bool *is_between)

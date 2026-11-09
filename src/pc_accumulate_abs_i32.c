@@ -1,7 +1,7 @@
-﻿#include "pc_accumulate_abs_i32.h"
+#include "pc_accumulate_abs_i32.h"
 #include <stddef.h>
 
-bool rm_accumulate_abs_i32(int32_t value, uint64_t *accumulator)
+bool pc_accumulate_abs_i32(int32_t value, uint64_t *accumulator)
 {
     uint32_t magnitude;
     if (accumulator == NULL) return false;

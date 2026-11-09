@@ -13,9 +13,9 @@ with explicit boolean failure contracts or documented saturation semantics.
 ## Scope
 
 This reference extraction contains 46 production source units from the
-PrimitiveCore arithmetic family: checked and saturating arithmetic, ranges,
+the arithmetic family: checked and saturating arithmetic, ranges,
 ratios, alignment, size validation and time conversion. The remaining family
-records stay in PrimitiveCore until their source and validation evidence are
+records outside this product boundary remain excluded until their validation evidence is
 restored into independently buildable modules.
 
 The public symbols retain their validated `pc_` names to avoid changing
@@ -56,7 +56,7 @@ inferred from host builds.
 Claudaris combines the Latin-inspired ideas of *clausus* (bounded/closed) and
 *clarus* (clear). The name reflects arithmetic with explicit limits and
 unambiguous failure semantics. The product originates from the
-PrimitiveCore `arithmetic/bounded_integer_and_overflow` family.
+the bounded integer and overflow domain.
 
 ## License
 

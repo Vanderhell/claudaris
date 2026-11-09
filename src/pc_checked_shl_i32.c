@@ -1,8 +1,8 @@
-﻿#include "pc_checked_shl_i32.h"
+#include "pc_checked_shl_i32.h"
 #include <limits.h>
 #include <stddef.h>
 
-bool rm_checked_shl_i32(int32_t value, unsigned shift, int32_t *result)
+bool pc_checked_shl_i32(int32_t value, unsigned shift, int32_t *result)
 {
     if (result == NULL || shift >= 32u) return false;
     if (shift == 0u) {

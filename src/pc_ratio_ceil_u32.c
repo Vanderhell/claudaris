@@ -1,7 +1,7 @@
-﻿#include "pc_ratio_ceil_u32.h"
+#include "pc_ratio_ceil_u32.h"
 #include <stddef.h>
 
-bool rm_ratio_ceil_u32(uint32_t numerator, uint32_t denominator,
+bool pc_ratio_ceil_u32(uint32_t numerator, uint32_t denominator,
                        uint32_t *quotient)
 {
     uint32_t q, r;

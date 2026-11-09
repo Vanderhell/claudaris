@@ -1,7 +1,7 @@
-﻿#include "pc_fraction_compare_i32.h"
+#include "pc_fraction_compare_i32.h"
 #include <stddef.h>
 
-bool rm_fraction_compare_i32(int32_t a_num, int32_t a_den,
+bool pc_fraction_compare_i32(int32_t a_num, int32_t a_den,
                              int32_t b_num, int32_t b_den,
                              int *comparison)
 {

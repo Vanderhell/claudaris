@@ -1,5 +1,5 @@
-#ifndef PRIMITIVECORE_NEAREST_MULTIPLE_U32_H
-#define PRIMITIVECORE_NEAREST_MULTIPLE_U32_H
+#ifndef PC_NEAREST_MULTIPLE_U32_H
+#define PC_NEAREST_MULTIPLE_U32_H
 #include <stdbool.h>
 #include <stdint.h>
 

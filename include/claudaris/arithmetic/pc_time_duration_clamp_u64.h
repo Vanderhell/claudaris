@@ -1,5 +1,5 @@
-#ifndef PRIMITIVECORE_PC_TIME_DURATION_CLAMP_U64_H
-#define PRIMITIVECORE_PC_TIME_DURATION_CLAMP_U64_H
+#ifndef PC_PC_TIME_DURATION_CLAMP_U64_H
+#define PC_PC_TIME_DURATION_CLAMP_U64_H
 #include <stdbool.h>
 #include <stdint.h>
 /* Clamp duration to inclusive [lower, upper]. False for invalid bounds or
