@@ -1,0 +1,20 @@
+﻿#include "pc_time_scale_ratio_u64.h"
+#include "pc_time_ratio_internal.h"
+
+bool pc_time_scale_ratio_u64(uint64_t value, uint64_t numerator,
+                             uint64_t denominator, uint64_t *result)
+{
+    uint64_t quotient;
+    uint64_t remainder;
+    if (result == 0 || denominator == 0u) return false;
+    if (!pc_time_ratio_mul_divmod_u64(value, numerator, denominator,
+                                      &quotient, &remainder)) return false;
+    if (remainder > denominator - remainder ||
+        (remainder == denominator - remainder &&
+         (quotient & UINT64_C(1)) != 0u)) {
+        if (quotient == UINT64_MAX) return false;
+        ++quotient;
+    }
+    *result = quotient;
+    return true;
+}

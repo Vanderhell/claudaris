@@ -1,0 +1,4 @@
+﻿#include "pc_period_align_u32.h"
+#include <assert.h>
+#include <stdint.h>
+int main(void){uint32_t out=77u;assert(pc_period_align_u32(10,0,5,&out)&&out==10);assert(pc_period_align_u32(11,0,5,&out)&&out==15);assert(pc_period_align_u32(0,10,5,&out)&&out==10);assert(pc_period_align_u32(11,10,5,&out)&&out==15);assert(pc_period_align_u32(UINT32_MAX,0,1,&out)&&out==UINT32_MAX);out=77;assert(!pc_period_align_u32(UINT32_MAX,0,2,&out)&&out==77);assert(!pc_period_align_u32(1,0,0,&out)&&out==77);assert(!pc_period_align_u32(1,0,1,0));for(uint32_t o=0;o<256;o++)for(uint32_t p=1;p<256;p++)for(uint32_t t=0;t<256;t++){uint32_t b=t<o?o:t,r=(b-o)%p,d=r? p-r:0;int ok=d<=UINT32_MAX-b;out=123;assert(pc_period_align_u32(t,o,p,&out)==ok);if(ok){assert(out==b+d);assert(out>=t&&out>=o&&(out-o)%p==0);if(out>=p)assert(out-p<t||out-p<o); }else assert(out==123);}return 0;}
