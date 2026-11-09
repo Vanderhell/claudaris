@@ -1,63 +1,55 @@
 # Claudaris
 
-Claudaris is a portable C99 library for bounded integer arithmetic, explicit
-overflow handling, exact integer ratios, range operations, alignment and
-time-scale calculations.
+Checked arithmetic, saturation, ratios, ranges, alignment and time conversion.
 
-## Problem solved
+## Overview
+**Checked and saturating arithmetic.** Checked arithmetic, saturation, ratios, ranges, alignment and time conversion.
 
-Embedded firmware often needs arithmetic that cannot silently wrap, overflow,
-or lose a boundary condition. Claudaris provides small stateless operations
-with explicit boolean failure contracts or documented saturation semantics.
+## Engineering problem
+Embedded safety-critical calculations need explicit overflow status and predictable saturation.
 
-## Scope
-
-This reference extraction contains 46 production source units from the
-the arithmetic family: checked and saturating arithmetic, ranges,
-ratios, alignment, size validation and time conversion. The remaining family
-records outside this product boundary remain excluded until their validation evidence is
-restored into independently buildable modules.
-
-The public symbols retain their validated `pc_` names to avoid changing
-numerical behavior or silently breaking existing callers.
+## Features
+- Portable C99-oriented implementation.
+- Deterministic integer or fixed-point behavior documented at function level.
+- No mandatory heap, threads or operating-system services.
+- Separate translation units for selective linking.
 
 ## Architecture
+The public surface consists of 47 headers and 47 callable API entries under include/. Implementations are in src/ and tests are in tests/. State, buffers and output ownership are explicit in each header contract.
 
-The library is freestanding C99-oriented and stateless. Each operation is in a
-separate source file and can be linked selectively. No heap, threads, global
-state or operating-system services are required.
+## Public API
+The complete symbol-by-symbol reference is in docs/API_REFERENCE.md. It lists every public header, callable symbol, include path and available contract comment.
 
-## Build and test
-
+## Integration
 ```sh
 cmake -S . -B build -DCLAUDARIS_BUILD_TESTS=ON
-cmake --build build --config Release
-ctest --test-dir build --output-on-failure -C Release
+cmake --build build --parallel
+ctest --test-dir build --output-on-failure
 ```
 
-## API and contracts
+For minimal firmware, include only the required header and compile the corresponding source translation unit. No collection-wide dependency is required.
 
-Public headers are in `include/claudaris/arithmetic`. Checked functions return
-`false` for invalid output pointers or arithmetic overflow/underflow and leave
-the output unchanged. Saturating functions clamp to the representable type
-range. Ratio and time functions reject zero denominators. Exact function-level
-contracts are in the public headers.
+## Configuration and dependencies
+The CMake test option is CLAUDARIS_BUILD_TESTS. The library has no mandatory third-party dependency. Platform-specific link requirements are documented in CMake and the affected API header.
 
-## Validation
+## Numeric and safety contracts
+Read the individual public header before use. It defines widths, representation, valid ranges, rounding, overflow/saturation/wrap behavior, invalid-input handling and whether output is left unchanged on failure. APIs are stateless unless a caller-owned state object is explicitly present.
 
-The migrated unit tests are run independently through CTest. A representative
-ESP32-S3 harness also passed 10,000 checked-add iterations plus boundary checks;
-the hardware result is documented in `docs/TESTING.md`.
-Footprint and cycle measurements are pending for this product and must not be
-inferred from host builds.
+## Testing and validation
+41/41 enabled host tests passed; representative ESP32-S3 validation is recorded.
+See docs/TESTING.md for reproducible commands, coverage boundaries and hardware status.
 
-## Origin and name
+## Resource status
+Embedded flash, RAM, stack and cycle measurements are reported only when measured for this product and configuration. Unmeasured values are marked PENDING; host measurements are not MCU measurements.
 
-Claudaris combines the Latin-inspired ideas of *clausus* (bounded/closed) and
-*clarus* (clear). The name reflects arithmetic with explicit limits and
-unambiguous failure semantics. The product originates from the
-the bounded integer and overflow domain.
+## Hardware status
+Hardware validation is reported in docs/TESTING.md. HW NOT VERIFIED is used where no reproducible target run is available.
 
-## License
+## Limitations
+Preserved tests outside this product boundary are not silently treated as product coverage. Unsupported ranges and invalid inputs are defined by the public headers.
 
-Apache License 2.0, copyright Vanderhell. See `LICENSE` and `NOTICE`.
+## Versioning and license
+Version 0.1.0. Public API compatibility is maintained within the 0.x series as documented changes are introduced. Apache License 2.0, copyright Vanderhell; see LICENSE and NOTICE.
+
+## Origin
+This repository is a self-contained product library. Historical provenance is maintained in the central catalog, while this repository documents the usable public API and its behavior.
