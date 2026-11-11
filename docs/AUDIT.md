@@ -52,17 +52,19 @@ No confirmed production arithmetic defect was reproduced in this audit; therefor
 | MSVC 19.42.34444, Debug and Release | PASS, 43/43 CTest each |
 | GCC ASan | PASS remotely; local runtime unavailable on Windows. |
 | GCC UBSan | PASS remotely; local runtime unavailable on Windows. |
-| ESP32-S3 all-API run | HW BLOCKED; candidates identified as other projects, no authorized Claudaris board available. |
+| ESP32-S3 all-API run | PASS, 46/46 representative calls on COM36; temporary `app0` backup/restore verified by matching SHA-256. |
 
-The remote run [42995296516](https://github.com/Vanderhell/claudaris/actions/runs/42995296516) on commit `927114f05d08715327005b0314f52207eb469e9e` passed all eight jobs, including GCC ASan/UBSan and both Debug/Release builds for GCC, Clang and MSVC. See [TESTING.md](TESTING.md) for host commands and [PERFORMANCE.md](PERFORMANCE.md) for measurement limits.
+The remote run [42995296516](https://github.com/Vanderhell/claudaris/actions/runs/42995296516) on commit `927114f05d08715327005b0314f52207eb469e9e` passed all eight jobs, including GCC ASan/UBSan and both Debug/Release builds for GCC, Clang and MSVC. Hardware validation and representative cycle measurements on COM36 are recorded in [TESTING.md](TESTING.md) and [PERFORMANCE.md](PERFORMANCE.md).
 
 ## Remaining limitations
 
-- Host testing cannot establish MCU-specific timing, stack, flash or static-RAM costs.
+- Host testing cannot establish MCU-specific timing, stack, or isolated flash cost. The current device run reports whole-firmware RAM; library static RAM is 0 bytes by inspection of production C units.
 - Randomized testing is deterministic and broad but not exhaustive over 64-bit domains.
 - Full-width `__int128` differential testing is available only on compilers that implement the extension; it is confined to test code.
-- Hardware validation is **HW BLOCKED**; the firmware sketch was not uploaded to avoid replacing unrelated application firmware.
+- Hardware validation passed on COM36 after explicit user instruction. Its Estimora `app0` image was fully backed up and restored with matching SHA-256; no other partition was written. COM37 was not used.
 
-## Hardware inventory follow-up (2026-11-11)
+## Hardware validation follow-up (2026-11-11)
 
-COM37 was reserved by the user and was not queried or opened. Read-only inspection of COM19 found an ESP32-S3 QFN56 rev 0.2, 16 MB flash/8 MB PSRAM, a Fortavis app image, and NVS, two app slots, SPIFFS and coredump partitions. COM36 is the same chip class/capacity and contains an Estimora image, with NVS, app, SPIFFS and coredump partitions. Neither is a Claudaris test device, and neither is authorized for replacement. Esptool's read-only inspection reset these two candidates through RTS into/out of ROM download mode; it did not write flash, erase or read NVS, or change partitions. Temporary app-header/partition-table captures were deleted. Hardware work stopped after this inventory: status is **HW BLOCKED**, API firmware was not uploaded, and all 46 cycle counts plus isolated footprint and stack measurements remain **NOT MEASURED**.
+COM37 was reserved and not opened. COM36 was identified as ESP32-S3 QFN56 rev 0.2, MAC `3c:0f:02:d9:76:f0`, running an Estimora image. Following the user's explicit instruction to try COM36, the full existing `app0` partition was backed up (SHA-256 `DED6AD129A6DA83DB94ACADF00C2B61814EAC9BB713BB13B2004416E8F707948`). The 301,056-byte Claudaris test image was temporarily written only at `0x10000`; firmware printed `CLAUDARIS_ALL_PASS|passed=46/46|first_failed_api=0`. The original full `app0` partition was then restored and read back with the same SHA-256. No NVS, partition table, SPIFFS, coredump, or other partition was written. Per-API medians are in [PERFORMANCE.md](PERFORMANCE.md).
+
+The test firmware build reported 300,905 bytes total sketch program storage and 22,404 bytes total global/static RAM. Isolated library flash and stack usage remain **NOT MEASURED**. Source inspection finds no file-scope objects in the production C units, so isolated library static RAM is 0 bytes. COM19 was not used for this validation.

@@ -37,15 +37,15 @@ CMake requests C99 with extensions disabled. GCC and Clang apply strict C99 mode
 
 Run [42995296516](https://github.com/Vanderhell/claudaris/actions/runs/42995296516) on commit `927114f05d08715327005b0314f52207eb469e9e` completed with **8/8 jobs PASS**: GCC Debug/Release, Clang Debug/Release, MSVC Debug/Release, GCC ASan, and GCC UBSan. This remote run supersedes the local sanitizer `NOT RUN` results above.
 
-## ESP32-S3
+## ESP32-S3 (2026-11-11)
 
-`HW BLOCKED`. Read-only inventory identified COM19 as ESP32-S3 QFN56 rev 0.2 with 16 MB flash/8 MB PSRAM and firmware project `fortavis_esp32_hardware`; its layout has NVS, two app slots, SPIFFS and coredump partitions. COM36 is the same chip class/capacity and contains an Estimora firmware image (`ESTIMORA_ALL19_*` strings); its layout has NVS, an app slot, SPIFFS and coredump. These belong to other projects and are not authorized Claudaris test devices. COM37 is reserved and was not queried beyond OS port enumeration. Esptool read operations caused COM19/COM36 to reset through RTS while entering/leaving ROM download mode; no flash writes, erase, NVS access, partition change or firmware upload occurred. The temporary read-only dumps were removed. No candidate is clearly authorized, so hardware testing stopped here; the sketch was not uploaded and no all-API result or cycle measurements are claimed.
+**PASS: 46/46 APIs** on COM36, ESP32-S3 QFN56 rev 0.2, MAC `3c:0f:02:d9:76:f0`, 16 MB flash / 8 MB PSRAM. The device was identified as an Estimora board; the user's explicit instruction to try COM36 authorized this temporary validation. Before flashing, the existing `app0` partition (`0x10000`, size `0x300000`) was read to a local backup (SHA-256 `DED6AD129A6DA83DB94ACADF00C2B61814EAC9BB713BB13B2004416E8F707948`). The validation image was written only at `0x10000`; no partition table, NVS, SPIFFS, or coredump region was written or read for this test. After validation, the complete backed-up `app0` was restored and read back; its SHA-256 matched exactly. COM37 was not opened or otherwise used.
 
-Historical documentation records a representative checked-add run on an ESP32-S3, but it did not cover all 46 APIs and is not evidence for this audit's hardware acceptance.
+The firmware printed `CLAUDARIS_ALL_PASS|passed=46/46|first_failed_api=0`. It checked one representative expected result for each public operation. Build: Arduino CLI 1.4.1, ESP32 Arduino core 3.3.10, FQBN `esp32:esp32:ozobot_drvkit`; image 301,056 bytes, CLI reports 300,905 bytes sketch program storage and 22,404 bytes total global/static RAM. Optimization setting was `-Os`; runtime CPU frequency reported 240 MHz. The benchmark used 31 paired samples of 1,000 repetitions per API, alternating actual and same-signature no-op batches, with a volatile sink. The separately measured empty-loop/batch cost was 29 cycles/call. Per-API estimates are the median paired actual-minus-no-op difference, divided by repetitions; see [PERFORMANCE.md](PERFORMANCE.md). These are measurements of this firmware/build and representative inputs, not worst-case bounds.
 
 ## Known validation limits
 
 - No exhaustive enumeration of the 64-bit input domains is possible; random and boundary tests do not prove all values.
 - The `__int128` differential oracle is optional and test-only; production remains strict C99.
-- Stack, per-function cycle counts, and isolated library flash/RAM were not measured for this audit.
-- Final host, sanitizer and CI results are recorded above; hardware remains blocked pending an explicitly designated Claudaris test device.
+- Stack bounds and isolated library flash contribution were not measured. The production C units contain no static objects, so isolated library static RAM contribution is 0 bytes by source inspection; stack usage remains unmeasured.
+- Final host, sanitizer and CI results are recorded above; hardware validation covers one representative input per API on COM36; it is not exhaustive MCU-domain testing.
