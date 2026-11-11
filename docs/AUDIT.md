@@ -50,11 +50,11 @@ No confirmed production arithmetic defect was reproduced in this audit; therefor
 | GCC 16.1.0 (MinGW UCRT), Debug and Release | PASS, 43/43 CTest each |
 | Clang 22.1.8 (Windows GNU target), Debug and Release | PASS, 43/43 CTest each |
 | MSVC 19.42.34444, Debug and Release | PASS, 43/43 CTest each |
-| GCC ASan | NOT RUN locally; runtime unavailable on Windows. Remote job pending final commit. |
-| GCC UBSan | NOT RUN locally; runtime unavailable on Windows. Remote job pending final commit. |
+| GCC ASan | PASS remotely; local runtime unavailable on Windows. |
+| GCC UBSan | PASS remotely; local runtime unavailable on Windows. |
 | ESP32-S3 all-API run | HW NOT VERIFIED; no safe authorized Claudaris board could be identified. |
 
-Exact final Actions job statuses and the workflow URL must be added after the final commit's remote workflow completes. See [TESTING.md](TESTING.md) for host commands and [PERFORMANCE.md](PERFORMANCE.md) for measurement limits.
+The remote run [42995054763](https://github.com/Vanderhell/claudaris/actions/runs/42995054763) on code commit `f355ce99cd46cbd7a1e5ba096db91cba9c7579ea` passed all eight jobs, including GCC ASan/UBSan and both Debug/Release builds for GCC, Clang and MSVC. The final documentation commit has its own run and will be verified before this audit is reported complete. See [TESTING.md](TESTING.md) for host commands and [PERFORMANCE.md](PERFORMANCE.md) for measurement limits.
 
 ## Remaining limitations
 

@@ -33,7 +33,9 @@ CMake requests C99 with extensions disabled. GCC and Clang apply strict C99 mode
 | GCC AddressSanitizer | Windows host | NOT RUN — GCC sanitizer runtime not installed |
 | GCC UndefinedBehaviorSanitizer | Windows host | NOT RUN — GCC sanitizer runtime not installed |
 
-Remote GitHub Actions is required to close the sanitizer and independent hosted-run checks. Results for the final pushed commit must be linked in this file only after that workflow completes.
+## Remote GitHub Actions
+
+Run [42995054763](https://github.com/Vanderhell/claudaris/actions/runs/42995054763) on source commit `f355ce99cd46cbd7a1e5ba096db91cba9c7579ea` completed with **8/8 jobs PASS**: GCC Debug/Release, Clang Debug/Release, MSVC Debug/Release, GCC ASan, and GCC UBSan. This remote run supersedes the local sanitizer `NOT RUN` results above. A documentation-only follow-up commit is being pushed; final-commit CI must be checked separately.
 
 ## ESP32-S3
 
