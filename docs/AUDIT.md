@@ -52,13 +52,17 @@ No confirmed production arithmetic defect was reproduced in this audit; therefor
 | MSVC 19.42.34444, Debug and Release | PASS, 43/43 CTest each |
 | GCC ASan | PASS remotely; local runtime unavailable on Windows. |
 | GCC UBSan | PASS remotely; local runtime unavailable on Windows. |
-| ESP32-S3 all-API run | HW NOT VERIFIED; no safe authorized Claudaris board could be identified. |
+| ESP32-S3 all-API run | HW BLOCKED; candidates identified as other projects, no authorized Claudaris board available. |
 
-The remote run [42995054763](https://github.com/Vanderhell/claudaris/actions/runs/42995054763) on code commit `f355ce99cd46cbd7a1e5ba096db91cba9c7579ea` passed all eight jobs, including GCC ASan/UBSan and both Debug/Release builds for GCC, Clang and MSVC. The final documentation commit has its own run and will be verified before this audit is reported complete. See [TESTING.md](TESTING.md) for host commands and [PERFORMANCE.md](PERFORMANCE.md) for measurement limits.
+The remote run [42995296516](https://github.com/Vanderhell/claudaris/actions/runs/42995296516) on commit `927114f05d08715327005b0314f52207eb469e9e` passed all eight jobs, including GCC ASan/UBSan and both Debug/Release builds for GCC, Clang and MSVC. See [TESTING.md](TESTING.md) for host commands and [PERFORMANCE.md](PERFORMANCE.md) for measurement limits.
 
 ## Remaining limitations
 
 - Host testing cannot establish MCU-specific timing, stack, flash or static-RAM costs.
 - Randomized testing is deterministic and broad but not exhaustive over 64-bit domains.
 - Full-width `__int128` differential testing is available only on compilers that implement the extension; it is confined to test code.
-- Hardware validation is NOT RUN, and the firmware sketch was not uploaded to avoid replacing unrelated application firmware.
+- Hardware validation is **HW BLOCKED**; the firmware sketch was not uploaded to avoid replacing unrelated application firmware.
+
+## Hardware inventory follow-up (2026-11-11)
+
+COM37 was reserved by the user and was not queried or opened. Read-only inspection of COM19 found an ESP32-S3 QFN56 rev 0.2, 16 MB flash/8 MB PSRAM, a Fortavis app image, and NVS, two app slots, SPIFFS and coredump partitions. COM36 is the same chip class/capacity and contains an Estimora image, with NVS, app, SPIFFS and coredump partitions. Neither is a Claudaris test device, and neither is authorized for replacement. Esptool's read-only inspection reset these two candidates through RTS into/out of ROM download mode; it did not write flash, erase or read NVS, or change partitions. Temporary app-header/partition-table captures were deleted. Hardware work stopped after this inventory: status is **HW BLOCKED**, API firmware was not uploaded, and all 46 cycle counts plus isolated footprint and stack measurements remain **NOT MEASURED**.

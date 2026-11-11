@@ -35,11 +35,11 @@ CMake requests C99 with extensions disabled. GCC and Clang apply strict C99 mode
 
 ## Remote GitHub Actions
 
-Run [42995054763](https://github.com/Vanderhell/claudaris/actions/runs/42995054763) on source commit `f355ce99cd46cbd7a1e5ba096db91cba9c7579ea` completed with **8/8 jobs PASS**: GCC Debug/Release, Clang Debug/Release, MSVC Debug/Release, GCC ASan, and GCC UBSan. This remote run supersedes the local sanitizer `NOT RUN` results above. A documentation-only follow-up commit is being pushed; final-commit CI must be checked separately.
+Run [42995296516](https://github.com/Vanderhell/claudaris/actions/runs/42995296516) on commit `927114f05d08715327005b0314f52207eb469e9e` completed with **8/8 jobs PASS**: GCC Debug/Release, Clang Debug/Release, MSVC Debug/Release, GCC ASan, and GCC UBSan. This remote run supersedes the local sanitizer `NOT RUN` results above.
 
 ## ESP32-S3
 
-`HW NOT VERIFIED` for this audit. Arduino CLI and the ESP32 3.3.10 core are installed, and the all-API sketch builds. Serial inspection found COM37 running an unrelated `fortavis_esp32_hardware` application that reports a persistence failure and crashes; it was not overwritten. COM19 and COM36 did not provide an identifiable Claudaris test board response. No flash or storage was modified. The sketch was therefore not uploaded and no all-API hardware result or cycle measurements are claimed.
+`HW BLOCKED`. Read-only inventory identified COM19 as ESP32-S3 QFN56 rev 0.2 with 16 MB flash/8 MB PSRAM and firmware project `fortavis_esp32_hardware`; its layout has NVS, two app slots, SPIFFS and coredump partitions. COM36 is the same chip class/capacity and contains an Estimora firmware image (`ESTIMORA_ALL19_*` strings); its layout has NVS, an app slot, SPIFFS and coredump. These belong to other projects and are not authorized Claudaris test devices. COM37 is reserved and was not queried beyond OS port enumeration. Esptool read operations caused COM19/COM36 to reset through RTS while entering/leaving ROM download mode; no flash writes, erase, NVS access, partition change or firmware upload occurred. The temporary read-only dumps were removed. No candidate is clearly authorized, so hardware testing stopped here; the sketch was not uploaded and no all-API result or cycle measurements are claimed.
 
 Historical documentation records a representative checked-add run on an ESP32-S3, but it did not cover all 46 APIs and is not evidence for this audit's hardware acceptance.
 
@@ -48,4 +48,4 @@ Historical documentation records a representative checked-add run on an ESP32-S3
 - No exhaustive enumeration of the 64-bit input domains is possible; random and boundary tests do not prove all values.
 - The `__int128` differential oracle is optional and test-only; production remains strict C99.
 - Stack, per-function cycle counts, and isolated library flash/RAM were not measured for this audit.
-- No final remote Actions result is documented until the final commit's jobs have completed.
+- Final host, sanitizer and CI results are recorded above; hardware remains blocked pending an explicitly designated Claudaris test device.

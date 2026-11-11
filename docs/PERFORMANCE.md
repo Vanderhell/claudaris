@@ -2,7 +2,7 @@
 
 ## Current audit
 
-Per-API ESP32-S3 cycle counts and isolated library flash/static-RAM contributions: **NOT MEASURED**. Stack usage: **NOT MEASURED**. The full validation sketch compiles, but it was not flashed because the identifiable COM37 target is running an unrelated firmware that reports a storage/persistence failure and crashes; the other detected ports could not be identified as authorized Claudaris test boards. See [TESTING.md](TESTING.md).
+**HW BLOCKED.** Per-API ESP32-S3 cycle counts and isolated library flash/static-RAM contributions: **NOT MEASURED**. Stack usage: **NOT MEASURED**. COM19 and COM36 were identified as running Fortavis and Estimora firmware, respectively, so neither was overwritten; COM37 is reserved and was not queried. No clearly authorized Claudaris test board was available. Read-only partition/firmware inspection caused transient ROM-mode resets on COM19/COM36 but made no flash writes and did not access NVS. See [TESTING.md](TESTING.md).
 
 The unflashed validation sketch compiled with Arduino ESP32 core 3.3.10 for `esp32:esp32:ozobot_drvkit`: **288,989 bytes** total sketch program storage and **21,948 bytes** total globals/static RAM. These are whole-sketch build totals, including harness/runtime overhead; they are not isolated Claudaris library contributions and do not measure runtime cycles.
 
