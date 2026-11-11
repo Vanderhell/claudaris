@@ -1,19 +1,21 @@
-# Performance
+# Performance and footprint
 
-The representative harness was measured on 2026-11-09 using an ESP32-S3 QFN56
-revision 0.2 board at 240 MHz, USB-Serial/JTAG on COM37, Arduino ESP32 core
-3.3.10 and `CDCOnBoot=cdc`. It ran 10,000 checked-add calls plus boundary
-checks. The values include the Arduino runtime and harness.
+## Current audit
 
-| Measurement | Status |
+Per-API ESP32-S3 cycle counts and isolated library flash/static-RAM contributions: **NOT MEASURED**. Stack usage: **NOT MEASURED**. The full validation sketch compiles, but it was not flashed because the identifiable COM37 target is running an unrelated firmware that reports a storage/persistence failure and crashes; the other detected ports could not be identified as authorized Claudaris test boards. See [TESTING.md](TESTING.md).
+
+The unflashed validation sketch compiled with Arduino ESP32 core 3.3.10 for `esp32:esp32:ozobot_drvkit`: **288,989 bytes** total sketch program storage and **21,948 bytes** total globals/static RAM. These are whole-sketch build totals, including harness/runtime overhead; they are not isolated Claudaris library contributions and do not measure runtime cycles.
+
+Do not infer per-function performance from the host tests or from a total firmware size. Any future footprint report should compare a baseline and library-linked build with identical board, compiler, optimization, linker and partition settings, and should report library sections separately from firmware/runtime overhead. A stack watermark is not a maximum stack bound.
+
+## Historical representative measurement
+
+The previous version of this document recorded an ESP32-S3 QFN56 rev 0.2 checked-add-only run (Arduino ESP32 core 3.3.10, CPU configured at 240 MHz, COM37) with 10,000 loop iterations. It reported 1–24 observed cycles, 310,264 bytes total sketch program storage, and 22,184 bytes global/static RAM. These values include runtime and harness overhead, are not isolated library footprint, and do not constitute this audit's all-API hardware validation. The currently observed COM37 firmware is unrelated, so the measurement is retained only as historical evidence.
+
+| Metric | Current audit status |
 |---|---|
-| ESP32-S3 checked-add cycles, minimum | 1 cycle observed |
-| ESP32-S3 checked-add cycles, maximum | 24 cycles observed |
-| ESP32-S3 harness program storage | 310,264 bytes |
-| ESP32-S3 harness global/static RAM | 22,184 bytes |
-| Stack usage | NOT MEASURED |
-| Heap usage | No heap API; runtime heap use not required |
-| Host timing | Not a substitute for MCU measurement |
-
-The values above are not the isolated library footprint. A baseline/minimal
-link-time comparison and per-function stack measurement remain pending.
+| Cycles per public API | NOT MEASURED |
+| Isolated library flash contribution | NOT MEASURED |
+| Isolated library static RAM contribution | NOT MEASURED |
+| Stack bounds | NOT MEASURED |
+| Heap requirement in the library | No dynamic allocation in audited implementation units |

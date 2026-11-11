@@ -1,7 +1,12 @@
 cmake_minimum_required(VERSION 3.20)
 project(claudaris VERSION 0.1.0 LANGUAGES C)
 
+set(CMAKE_C_STANDARD 99)
+set(CMAKE_C_STANDARD_REQUIRED ON)
+set(CMAKE_C_EXTENSIONS OFF)
+
 option(CLAUDARIS_BUILD_TESTS "Build the migrated unit tests" ON)
+option(CLAUDARIS_STRICT_WARNINGS "Treat standard compiler warnings as errors" ON)
 
 add_library(claudaris STATIC
     src/pc_abs_diff_i64_u64.c
@@ -43,7 +48,6 @@ add_library(claudaris STATIC
     src/pc_saturating_mul_u64.c
     src/pc_saturating_sub_i64.c
     src/pc_saturating_sub_u64.c
-    src/pc_saturating_sub_u64.c
     src/pc_size_add_checked_u32.c
     src/pc_size_mul_checked_u32.c
     src/pc_time_convert_ceil_u64.c
@@ -60,6 +64,13 @@ target_include_directories(claudaris PUBLIC
 )
 target_compile_features(claudaris PUBLIC c_std_99)
 set_target_properties(claudaris PROPERTIES POSITION_INDEPENDENT_CODE OFF)
+if(CLAUDARIS_STRICT_WARNINGS)
+    if(MSVC)
+        target_compile_options(claudaris PRIVATE /W4 /WX)
+    else()
+        target_compile_options(claudaris PRIVATE -Wall -Wextra -Wpedantic -Werror)
+    endif()
+endif()
 
 if(CLAUDARIS_BUILD_TESTS)
     enable_testing()
@@ -70,6 +81,17 @@ if(CLAUDARIS_BUILD_TESTS)
         target_include_directories("claudaris_${test_name}" PRIVATE
             ${CMAKE_CURRENT_SOURCE_DIR}/include/claudaris/arithmetic)
         target_link_libraries("claudaris_${test_name}" PRIVATE claudaris)
+        if(CLAUDARIS_STRICT_WARNINGS)
+            if(MSVC)
+                target_compile_options("claudaris_${test_name}" PRIVATE /W4 /WX /UNDEBUG)
+            else()
+                target_compile_options("claudaris_${test_name}" PRIVATE -Wall -Wextra -Wpedantic -Werror -UNDEBUG)
+            endif()
+        elseif(MSVC)
+            target_compile_options("claudaris_${test_name}" PRIVATE /UNDEBUG)
+        else()
+            target_compile_options("claudaris_${test_name}" PRIVATE -UNDEBUG)
+        endif()
         add_test(NAME "${test_name}" COMMAND "claudaris_${test_name}")
     endforeach()
 endif()

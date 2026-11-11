@@ -38,14 +38,13 @@ For a minimal integration, include only the required public header and compile t
 
 ## At a glance
 
-The public surface consists of 47 headers and 47 callable API entries under include/. Implementations are in src/ and tests are in tests/. State, buffers and output ownership are explicit in each header contract.
+The public surface consists of **46 callable APIs in 46 public headers** under `include/`. The time-ratio implementation uses one private helper declared in `src/pc_time_ratio_internal.h`; it is not public. The 47 C source units are 46 public implementations plus that shared internal helper. Automated validation is provided by 43 CTest programs. State, buffers and output ownership are explicit in each public header contract.
 
 The CMake test option is CLAUDARIS_BUILD_TESTS. The library has no mandatory third-party dependency. Platform-specific link requirements are documented in CMake and the affected API header.
 
 ## Validation status
 
-41/41 enabled host tests passed; representative ESP32-S3 validation is recorded.
-See docs/TESTING.md for reproducible commands, coverage boundaries and hardware status.
+The audit test suite directly exercises 46/46 public APIs, including deterministic boundary checks and seeded differential tests. The current audit matrix and hardware status are recorded in [docs/AUDIT.md](docs/AUDIT.md) and [docs/TESTING.md](docs/TESTING.md). ESP32-S3 validation for all APIs remains `HW NOT VERIFIED` until a safe, task-authorized board can be identified.
 
 Detailed overflow, rounding, invalid-input, memory-ownership and state rules are defined by the public headers and API reference. Do not infer them from the product name alone.
 
