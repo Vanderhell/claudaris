@@ -38,7 +38,7 @@ For a minimal integration, include only the required public header and compile t
 
 ## At a glance
 
-The public surface consists of **46 callable APIs in 46 public headers** under `include/`. The time-ratio implementation uses one private helper declared in `src/pc_time_ratio_internal.h`; it is not public. The 47 C source units are 46 public implementations plus that shared internal helper. Automated validation is provided by 43 CTest programs. State, buffers and output ownership are explicit in each public header contract.
+The public surface consists of **46 callable APIs in 46 public headers** under `include/`. The implementation includes one private shared helper alongside the 46 public implementation units. Automated validation is provided by 43 CTest programs. State, buffers and output ownership are explicit in each public header contract.
 
 The CMake test option is CLAUDARIS_BUILD_TESTS. The library has no mandatory third-party dependency. Platform-specific link requirements are documented in CMake and the affected API header.
 
