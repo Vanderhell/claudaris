@@ -1,0 +1,7 @@
+#include <claudaris/arithmetic/saturating_cast_u64_u32.h>
+#include <limits.h>
+
+uint32_t claudaris_saturating_cast_u64_u32(uint64_t value)
+{
+    return value > UINT32_MAX ? UINT32_MAX : (uint32_t)value;
+}

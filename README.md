@@ -20,8 +20,8 @@ Embedded safety-critical calculations need explicit overflow status and predicta
 
 ```sh
 cmake -S . -B build -DCLAUDARIS_BUILD_TESTS=ON
-cmake --build build --parallel
-ctest --test-dir build --output-on-failure
+cmake --build build --config Release --parallel
+ctest --test-dir build -C Release --output-on-failure
 ```
 
 For a minimal integration, include only the required public header and compile the matching source unit.
@@ -38,13 +38,13 @@ For a minimal integration, include only the required public header and compile t
 
 ## At a glance
 
-The public surface consists of **46 callable APIs in 46 public headers** under `include/`. The implementation includes one private shared helper alongside the 46 public implementation units. Automated validation is provided by 43 CTest programs. State, buffers and output ownership are explicit in each public header contract.
+The public surface consists of **46 callable APIs in 46 public headers** under `include/`. The implementation includes one private shared helper alongside the 46 public implementation units. Automated validation currently registers 43 C test programs and one C++ public-header smoke test. State, buffers and output ownership are explicit in each public header contract.
 
 The CMake test option is CLAUDARIS_BUILD_TESTS. The library has no mandatory third-party dependency. Platform-specific link requirements are documented in CMake and the affected API header.
 
 ## Validation status
 
-The audit test suite directly exercises 46/46 public APIs, including deterministic boundary checks and seeded differential tests. The current audit matrix and hardware status are recorded in [docs/AUDIT.md](docs/AUDIT.md) and [docs/TESTING.md](docs/TESTING.md). ESP32-S3 validation for all APIs remains `HW NOT VERIFIED` until a safe, task-authorized board can be identified.
+The audit test suite directly exercises 46/46 public APIs, including deterministic boundary checks and seeded differential tests. The current audit matrix and hardware status are recorded in [docs/AUDIT.md](docs/AUDIT.md) and [docs/TESTING.md](docs/TESTING.md). A predecessor source revision has historical ESP32-S3 evidence; the namespace-migrated source revision remains `HW NOT VERIFIED`.
 
 Detailed overflow, rounding, invalid-input, memory-ownership and state rules are defined by the public headers and API reference. Do not infer them from the product name alone.
 

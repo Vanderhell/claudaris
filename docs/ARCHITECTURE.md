@@ -1,18 +1,18 @@
 # Architecture
 
-Claudaris is a static C99 library with one implementation unit per public
-operation. Public headers contain the original `pc_` symbols and explicit
-fixed-width integer contracts. The library has no required runtime
-initialization, heap allocation, thread, or operating-system service.
+Claudaris is a static C99 library of checked integer arithmetic, bounded range,
+alignment, ratio, rounding, and time-conversion operations. Its 46 public
+functions use the `claudaris_` namespace and are grouped under
+`include/claudaris/arithmetic/`. Public headers are self-contained and expose
+fixed-width integer contracts.
 
-The 46 public operations are grouped by contract:
+Each public function has a dedicated implementation unit under `src/`.
+Time-conversion functions share a private overflow-safe multiply/divide helper
+in `src/`; it is not installed or exposed as public API. Callers own all input,
+output, and state storage. The library has no mandatory runtime initialization,
+heap allocation, threading, operating-system services, or third-party
+dependencies.
 
-- checked arithmetic and saturating conversion;
-- exact ratios and rounding-to-multiple operations;
-- bounded ranges and buffer-size validation;
-- period/alignment helpers;
-- unsigned time scaling with an internal overflow-safe multiply/divide helper.
-
-The internal time-ratio helper is private to the time conversion units and is
-not part of the public API. Consumers can link individual object files when
-their build system uses function-level or object-level selection.
+The build exports the `Claudaris::Claudaris` CMake target. Consumers can also
+compile selected implementation units directly when they need a small subset
+of the library.

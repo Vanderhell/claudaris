@@ -1,16 +1,21 @@
 # Testing and verification
 
-## Inventory and coverage
+## Coverage
 
-- **46 public callable APIs** are declared in 46 headers under `include/`.
-- `pc_time_ratio_mul_divmod_u64` is private, declared in `src/pc_time_ratio_internal.h`, and is not counted as public API.
-- 43 CTest programs are enabled by `CLAUDARIS_BUILD_TESTS`; each of the 46 public symbols is called directly by at least one enabled test.
-- `test_042_uncovered_api_audit.c` directly covers the eleven previously untested APIs and performs 100,000 fixed-seed cases for its unsigned and signed checked/saturating arithmetic, shift and ratio operations. It uses `__int128` as an independent exact oracle where supported and safe portable bounds checks otherwise.
-- `test_043_time_ratio_differential.c` performs 100,000 deterministic differential cases for floor, ceil and nearest-even 64-bit time conversion. GCC/Clang use an independent `unsigned __int128` product oracle; other compilers use exact 32-bit-factor cases plus full-width edge vectors.
-- Existing nearest-multiple, size arithmetic, offset range and period tests include deterministic domain/boundary coverage. Randomized testing is evidence, not a proof of exhaustive correctness.
-- Test checks remain active in Release: CMake undefines `NDEBUG` for test targets. New audit tests use explicit failure-returning checks.
+- 46 public callable APIs are declared in 46 public headers and each is called
+  directly by at least one of the 43 enabled C tests.
+- One C++ smoke-test target independently includes all 46 public headers.
+- The time-ratio multiply/divide helper is private under `src/` and is excluded
+  from the public count.
+- The preserved audit tests include deterministic boundary checks and 100,000
+  fixed-seed cases for checked/saturating arithmetic and full-width time
+  conversion where an independent widened oracle is supported.
+- Tests use explicit checks and the CMake configuration undefines `NDEBUG` for
+  test targets, so checks remain active in Release builds.
+- Random testing supplements boundary and invariant checks; it is not an
+  exhaustive proof over all 64-bit inputs.
 
-## Reproduce
+## Build and test
 
 ```sh
 cmake -S . -B build -DCLAUDARIS_BUILD_TESTS=ON -DCLAUDARIS_STRICT_WARNINGS=ON
@@ -18,34 +23,48 @@ cmake --build build --config Release --parallel
 ctest --test-dir build -C Release --output-on-failure
 ```
 
-CMake requests C99 with extensions disabled. GCC and Clang apply strict C99 mode with `-Wall -Wextra -Wpedantic -Werror`; MSVC compiles the same C99-compatible code with `/W4 /WX`.
+The library requires ISO C99 with extensions disabled. GCC/Clang use
+`-Wall -Wextra -Wpedantic -Werror`; MSVC uses `/W4 /WX`.
 
-## Local audit run (2026-11-11)
+## Historical source-revision results
 
-| Toolchain | Configuration | Build | Tests |
-|---|---|---:|---:|
-| GCC 16.1.0 (MinGW UCRT) | Debug | PASS | PASS 43/43 |
-| GCC 16.1.0 (MinGW UCRT) | Release | PASS | PASS 43/43 |
-| Clang 22.1.8 (Windows GNU target) | Debug | PASS | PASS 43/43 |
-| Clang 22.1.8 (Windows GNU target) | Release | PASS | PASS 43/43 |
-| MSVC 19.42.34444 | Debug | PASS | PASS 43/43 |
-| MSVC 19.42.34444 | Release | PASS | PASS 43/43 |
-| GCC AddressSanitizer | Windows host | NOT RUN — GCC sanitizer runtime not installed |
-| GCC UndefinedBehaviorSanitizer | Windows host | NOT RUN — GCC sanitizer runtime not installed |
+The prior public-symbol revision was tested on 2026-11-11:
 
-## Remote GitHub Actions
+| Toolchain | Configuration | Result |
+|---|---|---|
+| GCC 16.1.0 (MinGW UCRT) | Debug / Release | PASS, 43/43 each |
+| Clang 22.1.8 (Windows GNU target) | Debug / Release | PASS, 43/43 each |
+| MSVC 19.42.34444 | Debug / Release | PASS, 43/43 each |
+| GCC ASan / UBSan | Remote workflow | PASS |
 
-Run [42995296516](https://github.com/Vanderhell/claudaris/actions/runs/42995296516) on commit `927114f05d08715327005b0314f52207eb469e9e` completed with **8/8 jobs PASS**: GCC Debug/Release, Clang Debug/Release, MSVC Debug/Release, GCC ASan, and GCC UBSan. This remote run supersedes the local sanitizer `NOT RUN` results above.
+The associated remote run is [42995296516](https://github.com/Vanderhell/claudaris/actions/runs/42995296516), on pre-migration commit `927114f05d08715327005b0314f52207eb469e9e`. It is not validation of the renamed source revision.
 
-## ESP32-S3 (2026-11-11)
+## Namespace-migrated revision results
 
-**PASS: 46/46 APIs** on COM36, ESP32-S3 QFN56 rev 0.2, MAC `3c:0f:02:d9:76:f0`, 16 MB flash / 8 MB PSRAM. The device was identified as an Estimora board; the user's explicit instruction to try COM36 authorized this temporary validation. Before flashing, the existing `app0` partition (`0x10000`, size `0x300000`) was read to a local backup (SHA-256 `DED6AD129A6DA83DB94ACADF00C2B61814EAC9BB713BB13B2004416E8F707948`). The validation image was written only at `0x10000`; no partition table, NVS, SPIFFS, or coredump region was written or read for this test. After validation, the complete backed-up `app0` was restored and read back; its SHA-256 matched exactly. COM37 was not opened or otherwise used.
+| Toolchain/check | Result |
+|---|---|
+| MSVC 19.42.34444 Debug / Release | PASS, 44/44 CTest entries each |
+| GCC 16.1.0 (MinGW UCRT) Debug / Release | PASS, 44/44 each |
+| Clang 22.1.8 (Windows GNU target) Debug / Release | PASS, 44/44 each |
+| GCC 13.3.0 AddressSanitizer / UndefinedBehaviorSanitizer (Ubuntu 24.04 under WSL) | PASS, 44/44 each |
+| GitHub Actions for migrated revision | NOT RUN; push not yet performed |
+| ESP32-S3 for migrated revision | HW NOT VERIFIED |
 
-The firmware printed `CLAUDARIS_ALL_PASS|passed=46/46|first_failed_api=0`. It checked one representative expected result for each public operation. Build: Arduino CLI 1.4.1, ESP32 Arduino core 3.3.10, FQBN `esp32:esp32:ozobot_drvkit`; image 301,056 bytes, CLI reports 300,905 bytes sketch program storage and 22,404 bytes total global/static RAM. Optimization setting was `-Os`; runtime CPU frequency reported 240 MHz. The benchmark used 31 paired samples of 1,000 repetitions per API, alternating actual and same-signature no-op batches, with a volatile sink. The separately measured empty-loop/batch cost was 29 cycles/call. Per-API estimates are the median paired actual-minus-no-op difference, divided by repetitions; see [PERFORMANCE.md](PERFORMANCE.md). These are measurements of this firmware/build and representative inputs, not worst-case bounds.
+## Historical ESP32-S3 evidence
 
-## Known validation limits
+The pre-migration revision has a recorded representative hardware run on an
+ESP32-S3 at 240 MHz: 46/46 API checks passed. The Arduino CLI 1.4.1 and ESP32
+Arduino core 3.3.10 build used `-Os`. Its firmware printed
+`CLAUDARIS_ALL_PASS|passed=46/46|first_failed_api=0`. This historical test used
+one representative expected result per API; it was not exhaustive MCU-domain
+testing. The existing application image was restored and verified after the
+run according to the internal test record. No claim is made that the renamed
+revision has been flashed or tested on hardware.
 
-- No exhaustive enumeration of the 64-bit input domains is possible; random and boundary tests do not prove all values.
-- The `__int128` differential oracle is optional and test-only; production remains strict C99.
-- Stack bounds and isolated library flash contribution were not measured. The production C units contain no static objects, so isolated library static RAM contribution is 0 bytes by source inspection; stack usage remains unmeasured.
-- Final host, sanitizer and CI results are recorded above; hardware validation covers one representative input per API on COM36; it is not exhaustive MCU-domain testing.
+## Limits
+
+Full-width random testing is not exhaustive. The `unsigned __int128` reference
+is test-only and optional on compilers without that extension. Stack bounds
+and isolated library flash have not been measured. See
+[`PERFORMANCE.md`](PERFORMANCE.md) for historical cycle data and footprint
+limits.
